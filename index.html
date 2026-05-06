@@ -218,10 +218,11 @@
     align-self: flex-start; margin-top: 4px;
   }
   .form-submit:hover { opacity: .9; transform: translateY(-1px); }
-  #form-success {
+  [data-fs-success] {
     display: none; padding: 16px 20px;
     background: rgba(122,158,126,0.2); border: 1px solid var(--sage);
     border-radius: 3px; color: var(--mist); font-size: 14px; line-height: 1.6;
+    margin-bottom: 14px;
   }
 
   /* ── FOOTER ── */
@@ -518,28 +519,33 @@
     </p>
   </div>
   <div class="fade-up">
+    <div data-fs-success id="form-success">✓ Message sent! Mathew will be in touch within 1 business day.</div>
+    <div data-fs-error id="form-error" style="display:none;padding:16px 20px;background:rgba(232,96,26,0.15);border:1px solid var(--tangerine);border-radius:3px;color:var(--mist);font-size:14px;margin-bottom:14px;"></div>
     <form class="contact-form" id="contactForm">
       <div class="form-row">
         <div class="form-group">
           <label for="fname">First name</label>
-          <input type="text" id="fname" placeholder="Jane" required>
+          <input type="text" id="fname" name="first_name" placeholder="Jane" required data-fs-field>
+          <span data-fs-error="first_name" style="color:var(--tangerine);font-size:12px;"></span>
         </div>
         <div class="form-group">
           <label for="lname">Last name</label>
-          <input type="text" id="lname" placeholder="Smith" required>
+          <input type="text" id="lname" name="last_name" placeholder="Smith" required data-fs-field>
+          <span data-fs-error="last_name" style="color:var(--tangerine);font-size:12px;"></span>
         </div>
       </div>
       <div class="form-group">
         <label for="email">Email address</label>
-        <input type="email" id="email" placeholder="jane@yourbusiness.com" required>
+        <input type="email" id="email" name="email" placeholder="jane@yourbusiness.com" required data-fs-field>
+        <span data-fs-error="email" style="color:var(--tangerine);font-size:12px;"></span>
       </div>
       <div class="form-group">
         <label for="biz">Business name</label>
-        <input type="text" id="biz" placeholder="Your business">
+        <input type="text" id="biz" name="business_name" placeholder="Your business" data-fs-field>
       </div>
       <div class="form-group">
         <label for="service">What are you looking for help with?</label>
-        <select id="service">
+        <select id="service" name="service_interest" data-fs-field>
           <option value="">Select a service...</option>
           <option>Bookkeeping</option>
           <option>Cash Flow Management</option>
@@ -552,10 +558,10 @@
       </div>
       <div class="form-group">
         <label for="message">Tell me a little about where you're at</label>
-        <textarea id="message" placeholder="What's your biggest financial challenge right now?"></textarea>
+        <textarea id="message" name="message" placeholder="What's your biggest financial challenge right now?" data-fs-field></textarea>
+        <span data-fs-error="message" style="color:var(--tangerine);font-size:12px;"></span>
       </div>
-      <button type="submit" class="form-submit">Send message →</button>
-      <div id="form-success">✓ Message sent! Mathew will be in touch within 1 business day.</div>
+      <button type="submit" class="form-submit" data-fs-submit-btn>Send message →</button>
     </form>
   </div>
 </section>
@@ -583,21 +589,10 @@
   }, { threshold: 0.1 });
   document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
 
-  // Contact form — opens mailto so it works without a backend
-  document.getElementById('contactForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const fname   = document.getElementById('fname').value;
-    const lname   = document.getElementById('lname').value;
-    const email   = document.getElementById('email').value;
-    const biz     = document.getElementById('biz').value;
-    const service = document.getElementById('service').value;
-    const message = document.getElementById('message').value;
-    const subject = encodeURIComponent(`New inquiry from ${fname} ${lname} — Field to Flight Finance`);
-    const body    = encodeURIComponent(`Name: ${fname} ${lname}\nEmail: ${email}\nBusiness: ${biz}\nService interest: ${service}\n\nMessage:\n${message}`);
-    window.location.href = `mailto:mathew@fieldtoflightfinance.com?subject=${subject}&body=${body}`;
-    document.getElementById('form-success').style.display = 'block';
-    this.reset();
-  });
+  // Contact form — Formspree Ajax
+  window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+  formspree('initForm', { formElement: '#contactForm', formId: 'mgodzvpo' });
 </script>
+<script src="https://unpkg.com/@formspree/ajax@1" defer></script>
 </body>
 </html>
